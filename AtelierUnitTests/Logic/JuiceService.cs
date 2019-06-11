@@ -12,69 +12,30 @@ namespace Logic
 {
     public class JuiceService : IJuiceService
     {
-        private readonly IFruitGateway _fruitGateway;
+        private readonly IIngredientRepository _ingredientRepository;
 
-        public JuiceService(IFruitGateway fruitGateway)
+        public JuiceService(IIngredientRepository ingredientRepository)
         {
-            _fruitGateway = fruitGateway;
+            _ingredientRepository = ingredientRepository;
         }
 
         public Juice Create(Recipe recipe)
         {
-            var availableFruits = _fruitGateway.ObtainAvailableFruits();
-            var intersectOfFruits = recipe.requiredIngredients.Intersect(availableFruits);
-
-            return null;
-        }
-
-        internal bool EnoughAvailableFruitsForRequiredFruits(List<Fruit> availableFruits,
-            List<Ingredient> requiredFruits, out List<Fruit> remainingFruits)
-        {
-            remainingFruits = new List<Fruit>();
-            requiredFruits.ForEach(requiredFruit =>
+            var ingredients = recipe.requiredIngredients.Where(x=>x.GetType()==typeof(Fruit)).ToList();
+            ingredients.ForEach(x =>
             {
-                var fruitToUpdate = findViableFruit(availableFruits, requiredFruit, out var remainingFruit);
-                if (fruitToUpdate == null)
+                var expectedQuantity = x.quantity;
+                var ingredientName = x.name;
+                var availableQuantity = _ingredientRepository.ObtainAvailableQuantity(ingredientName, x.GetType());
+                if (expectedQuantity > availableQuantity)
                 {
-                    remainingFruits = availableFruits;
-                    return false;
-                }
-                availableFruits.FirstOrDefault(x =>
-                    x.name.Equals(fruitToUpdate.name) && x.color.Equals(fruitToUpdate.color) &&
-                    x.texture.Equals(fruitToUpdate.texture)).quantity = fruitToUpdate.quantity;
-                if (remainingFruit.quantity > 0)
-                {
-
+                    throw new NotEnoughIngredientException(ingredientName, expectedQuantity, availableQuantity);
                 }
             });
 
+            ingredients.ForEach(x=>_ingredientRepository.RemoveIngredientQuantity(x.name,x.quantity));
 
-            return false;
-        }
-
-        private Fruit findViableFruit(List<Fruit> availableIngredients, Ingredient requiredIngredient,
-            out Ingredient remainingIngredient)
-        {
-            var fruitToUpdate = availableIngredients.FirstOrDefault(y =>
-                y.name.Equals(requiredIngredient.name, StringComparison.InvariantCultureIgnoreCase));
-            if (fruitToUpdate != null)
-            {
-                fruitToUpdate.quantity -= requiredIngredient.quantity;
-                if (fruitToUpdate.quantity < 0)
-                {
-                    remainingIngredient = requiredIngredient;
-                    remainingIngredient.quantity += fruitToUpdate.quantity;
-                    fruitToUpdate.quantity = 0;
-                }
-
-                requiredIngredient.quantity = 0;
-                remainingIngredient = requiredIngredient;
-                return fruitToUpdate;
-            }
-
-            remainingIngredient = requiredIngredient;
-
-            return null;
+            return new Juice {name = recipe.name, ingredients = recipe.requiredIngredients};
         }
     }
 }
