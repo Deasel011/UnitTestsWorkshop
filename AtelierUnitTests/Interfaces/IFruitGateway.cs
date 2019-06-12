@@ -5,8 +5,9 @@ namespace Interfaces
 {
     public interface IFruitGateway
     {
-        List<Fruit> ObtainAvailableFruits();
-        double ObtainAvailableQuantityOfFruit(string fruitName);
-        double RemoveFruit(string fruitName, double fruitQuantity);
+        List<Fruit> ObtainAvailable();
+        double ObtainAvailableQuantity(string fruitName);
+        double Remove(string fruitName, double fruitQuantity);
+        double Add(Fruit fruit, double quantity);
     }
 }

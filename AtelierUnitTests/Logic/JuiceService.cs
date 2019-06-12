@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Interfaces;
 using Models;
 
 [assembly: InternalsVisibleTo("xUnitFakeItEasyTests")]
-
 namespace Logic
 {
     public class JuiceService : IJuiceService
@@ -33,7 +29,7 @@ namespace Logic
                 }
             });
 
-            ingredients.ForEach(x=>_ingredientRepository.RemoveIngredientQuantity(x.name,x.quantity));
+            ingredients.ForEach(x=>_ingredientRepository.RemoveIngredientQuantity(x.name, x.GetType(),x.quantity));
 
             return new Juice {name = recipe.name, ingredients = recipe.requiredIngredients};
         }

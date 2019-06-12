@@ -37,8 +37,8 @@ namespace xUnitFakeItEasyTests
             var juice = juiceService.Create(recipe);
 
             //Assert
-            A.CallTo(()=> ingredientRepository.RemoveIngredientQuantity(A<string>.Ignored, A<double>.Ignored)).MustHaveHappenedOnceExactly();
-            Assert.Equal(1,juice.ingredients.Count);
+            A.CallTo(()=> ingredientRepository.RemoveIngredientQuantity(A<string>.Ignored, A<Type>.Ignored, A<double>.Ignored)).MustHaveHappenedOnceExactly();
+            Assert.InRange(juice.ingredients.Count,1,1);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace xUnitFakeItEasyTests
             //Act
             //Assert
             Assert.Throws<NotEnoughIngredientException>(()=>juiceService.Create(recipe));
-            A.CallTo(() => ingredientRepository.RemoveIngredientQuantity(A<string>.Ignored, A<double>.Ignored)).MustNotHaveHappened();
+            A.CallTo(() => ingredientRepository.RemoveIngredientQuantity(A<string>.Ignored, A<Type>.Ignored, A<double>.Ignored)).MustNotHaveHappened();
         }
     }
 }
