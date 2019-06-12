@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using Castle.Components.DictionaryAdapter;
 using FakeItEasy;
 using Interfaces;
 using Logic;
@@ -42,29 +39,36 @@ namespace xUnitFakeItEasyTests
         }
 
         [Fact]
-        public void Given_A_Recipe_And_UnAvailable_Fruits_When_I_Create_A_Juice_Then_Not_Enough_Ingredients_Exception_Is_Raised()
+        public void Given_A_Recipe_And_Unavailable_Fruits_When_I_Create_A_Juice_Then_Not_Enough_Ingredients_Exception_Is_Raised()
         {
             //Arrange
-            var ingredientRepository = A.Fake<IIngredientRepository>();
-
-            A.CallTo(() => ingredientRepository.ObtainAvailableQuantity("apple", typeof(Fruit)))
-                .Returns(4);
-
-            var recipe = new Recipe
-            {
-                name = "Apple Juice Super Extra Large",
-                recipeType = typeof(Juice),
-                requiredIngredients = new List<Ingredient>
-                {
-                    new Fruit {name = "apple", quantity = 5}
-                }
-            };
-            var juiceService = new JuiceService(ingredientRepository);
 
             //Act
+
             //Assert
-            Assert.Throws<NotEnoughIngredientException>(()=>juiceService.Create(recipe));
-            A.CallTo(() => ingredientRepository.RemoveIngredientQuantity(A<string>.Ignored, A<Type>.Ignored, A<double>.Ignored)).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void Given_A_Recipe_And_Unavailable_Fruits_When_I_Create_A_Juice_Then_No_Fruits_Are_Being_Removed()
+        {
+            //Arrange
+            
+            //Act
+
+            //Assert
+            
+        }
+
+        [Fact]
+        public void
+            Given_A_Number_Of_Ingredients_In_A_Recipe_When_I_Create_Juice_Then_The_Same_Amount_Of_Ingredients_Is_Being_Removed()
+        {
+            //Arrange
+
+            //Act
+
+            //Assert
+            
         }
     }
 }
